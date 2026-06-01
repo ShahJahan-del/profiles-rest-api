@@ -36,7 +36,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         return super().update(instance, validated_data)
 
-
 class ProfileFeedItemSerializer(serializers.ModelSerializer):
     """Serializes profile feed items"""
 
