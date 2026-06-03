@@ -1,17 +1,21 @@
 from rest_framework import permissions
+from sms_api import models
 
 class IsAdminUser(permissions.BasePermission):
-    """Permet l'accès complet uniquement aux Admins"""
+    """L'admin est soit un superuser Django, soit explicitement défini."""
     def has_permission(self, request, view):
-        # On vérifie si l'utilisateur est connecté et si son rôle est ADMIN
-        return request.user and request.user.is_authenticated and getattr(request.user, 'role', None) == 'ADMIN'
+        return request.user and request.user.is_authenticated and (request.user.is_superuser or getattr(request.user, 'is_staff', False))
 
 class IsTeacherUser(permissions.BasePermission):
-    """Permet l'accès aux professeurs connectés"""
+    """Vérifie si l'utilisateur connecté existe dans la table Teachers de Supabase."""
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated and getattr(request.user, 'role', None) == 'TEACHER'
+        if not request.user or not request.user.is_authenticated:
+            return False
+        return models.Teachers.objects.filter(email=request.user.email).exists()
 
 class IsStudentUser(permissions.BasePermission):
-    """Permet l'accès aux étudiants connectés"""
+    """Vérifie si l'utilisateur connecté existe dans la table Students de Supabase."""
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated and getattr(request.user, 'role', None) == 'STUDENT'
+        if not request.user or not request.user.is_authenticated:
+            return False
+        return models.Students.objects.filter(email=request.user.email).exists()

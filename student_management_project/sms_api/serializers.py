@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from sms_api import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,7 +28,7 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AdminUserCreationSerializer(serializers.ModelSerializer):
-    """Création de compte par l'Admin (Inspiré Section 10.1)"""
+    """Création de compte par l'Admin (Inspiré Section 10)"""
     role = serializers.ChoiceField(choices=(('ADMIN', 'Admin'), ('TEACHER', 'Teacher'), ('STUDENT', 'Student')), write_only=True)
 
     class Meta:
@@ -42,16 +42,16 @@ class AdminUserCreationSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        # 1. On extrait le rôle envoyé par le formulaire ('ADMIN', 'TEACHER', 'STUDENT')
+        # 1. On extrait le rôle pour la logique de la vue
         role = validated_data.pop('role')
 
         # 2. On crée l'utilisateur Django standard
         user = User.objects.create_user(**validated_data)
 
-        # 3. ON FIXE LES DROITS DJANGO EN FONCTION DU RÔLE
+        # 3. Droits d'accès au back-office si ADMIN
         if role == 'ADMIN':
-            user.is_staff = True      # Donnes l'accès au panel /admin/
-            user.is_superuser = True  # Donne tous les super-pouvoirs
+            user.is_staff = True
+            user.is_superuser = True
         else:
             user.is_staff = False
             user.is_superuser = False
