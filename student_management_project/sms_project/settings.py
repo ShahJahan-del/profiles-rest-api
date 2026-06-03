@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'sms_api',
     'rest_framework.authtoken',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -110,6 +111,15 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# Configuration de la documentation
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'School Management System API',
+    'DESCRIPTION': 'API de gestion scolaire avec authentification par Token, cloisonnement strict des rôles (Admin, Teacher, Student) et notifications e-mails automatisées.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
 # Internationalization
